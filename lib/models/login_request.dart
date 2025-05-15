@@ -5,7 +5,7 @@ class LoginRequest {
   LoginRequest({required this.id, required this.password});
 
   Map<String, dynamic> toJson() => {
-        'id': id,
+        'id_student': id,
         'password': password,
       };
 }
