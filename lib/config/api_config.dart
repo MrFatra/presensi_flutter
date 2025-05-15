@@ -1,3 +1,7 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiConfig {
-  static const String apiBaseUrl = 'http://127.0.0.1:8000';
+  static String? BASEAPIURL = dotenv.env['VAR_NAME'];
 }
