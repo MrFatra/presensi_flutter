@@ -1,0 +1,2 @@
+D:/vscode/flutter/presensi_flutter_test/android/app/.cxx/Debug/143d3f53/x86_64/CMakeFiles/edit_cache.dir
+D:/vscode/flutter/presensi_flutter_test/android/app/.cxx/Debug/143d3f53/x86_64/CMakeFiles/rebuild_cache.dir
