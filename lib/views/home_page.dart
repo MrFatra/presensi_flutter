@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:presensi_flutter_test/views/permission.dart';
 import 'package:presensi_flutter_test/views/profile_siswa.dart';
 import 'package:presensi_flutter_test/views/riwayatspp.dart';
 import 'package:presensi_flutter_test/views/riwayatpeminjamanbuku.dart';
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      bottomNavigationBar: BottomNavbar(currentIndex: _currentIndex),
+      bottomNavigationBar: BottomNavbar(currentIndex: 2),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -156,7 +157,9 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 8),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => PermissionPage()));
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.yellow[700],
               foregroundColor: Colors.black,

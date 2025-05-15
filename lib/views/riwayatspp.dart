@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:presensi_flutter_test/widgets/bottom_navbar.dart';
 
 class RiwayatSPPPage extends StatefulWidget {
   const RiwayatSPPPage({super.key});
@@ -30,18 +31,7 @@ class _RiwayatSPPPageState extends State<RiwayatSPPPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
-        ],
-      ),
+      bottomNavigationBar: BottomNavbar(currentIndex: 1),
       body: SafeArea(
         child: Column(
           children: [

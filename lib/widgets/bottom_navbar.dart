@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:presensi_flutter_test/utils/constant.dart';
+import 'package:presensi_flutter_test/views/acchievement_pages.dart';
 import 'package:presensi_flutter_test/views/home_page.dart';
 import 'package:presensi_flutter_test/views/profile_siswa.dart';
 import 'package:presensi_flutter_test/views/riwayatpeminjamanbuku.dart';
+import 'package:presensi_flutter_test/views/riwayatspp.dart';
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -25,9 +27,13 @@ class BottomNavbar extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) {
               if (index == 0)
-                return const RiwayatPeminjamanBukuPage();
+                return  RiwayatPeminjamanBukuPage();
               else if (index == 1)
-                return const HomePage();
+                return  RiwayatSPPPage();
+              else if (index == 2)
+                return  HomePage();
+              else if (index == 3)
+                return  AcchievementPage();
               else
                 return ProfilePage();
             },
@@ -36,15 +42,23 @@ class BottomNavbar extends StatelessWidget {
       },
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.history_edu_rounded),
+          icon: Icon(Icons.history_edu_rounded,  color: Colors.blueAccent,),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_rounded),
+          icon: Icon(Icons.payment,  color: Colors.blueAccent,),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_rounded),
+          icon: Icon(Icons.home_rounded,  color: Colors.blueAccent,),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.star, color: Colors.blueAccent,),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_rounded, color: Colors.blueAccent,),
           label: '',
         ),
       ],
