@@ -10,7 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController nisController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool obscurePassword = true;
   bool rememberMe = false;
@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     final loginRequest = LoginRequest(
-      nis: nisController.text.trim(),
+      id: idController.text.trim(),
       password: passwordController.text.trim(),
     );
 
@@ -71,12 +71,12 @@ class _LoginPageState extends State<LoginPage> {
                   const Text('Login to your account',
                       style: TextStyle(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 16),
-                  const Text('NIS'),
+                  const Text('ID Siswa'),
                   const SizedBox(height: 6),
                   TextField(
-                    controller: nisController,
+                    controller: idController,
                     decoration: InputDecoration(
-                      hintText: 'Masukkan NIS',
+                      hintText: 'Masukkan ID Siswa',
                       fillColor: Colors.grey[200],
                       filled: true,
                       border: OutlineInputBorder(
