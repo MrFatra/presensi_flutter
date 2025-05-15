@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presensi_flutter_test/services/auth/login.dart';
 import 'package:presensi_flutter_test/models/login_request.dart';
+import 'package:presensi_flutter_test/utils/token.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final token = await login(loginRequest);
-
+      await saveToken(token);
       print('Login berhasil. Token: $token');
     } catch (e) {
       setState(() {
