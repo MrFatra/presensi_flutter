@@ -28,14 +28,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.blue.shade600,
       bottomNavigationBar: BottomNavbar(currentIndex: 2),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.zero,
           child: Column(
             children: [
-              // Header
-              _buildHeader(),
+              ProfilePage(),
 
               // Card Absensi
               _buildAbsensiCard(),
@@ -45,64 +45,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.blue,
-      child: Row(
-        children: [
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
-            },
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 28,
-                  backgroundImage: AssetImage('assets/images/gambar.png'),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Nama Siswa',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Nomor Induk Siswa - KELAS',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.edit, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
-            },
-          ),
-        ],
       ),
     );
   }
@@ -158,7 +100,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => PermissionPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PermissionPage()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.yellow[700],
@@ -199,9 +141,6 @@ class _HomePageState extends State<HomePage> {
             children: [
               _buildAbsensiItem('Hari, Tanggal', 'Hadir', Colors.green),
               _buildAbsensiItem('Hari, Tanggal', 'Izin', Colors.orange),
-              _buildAbsensiItem('Hari, Tanggal', 'Hadir', Colors.green),
-              _buildAbsensiItem('Hari, Tanggal', 'Hadir', Colors.green),
-              _buildAbsensiItem('Hari, Tanggal', 'Terlambat', Colors.red),
               _buildAbsensiItem('Hari, Tanggal', 'Hadir', Colors.green),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:presensi_flutter_test/views/home_page.dart';
 import 'package:presensi_flutter_test/views/login_page.dart';
 import 'package:presensi_flutter_test/views/permission.dart';
 import 'package:presensi_flutter_test/views/profile_siswa.dart';
+import 'package:presensi_flutter_test/views/riwayatpeminjamanbuku.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomePage(),
+      home: RiwayatPeminjamanBukuPage(),
       debugShowCheckedModeBanner: false,
     );
   }
