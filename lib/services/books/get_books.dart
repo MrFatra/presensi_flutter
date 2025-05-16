@@ -16,7 +16,6 @@ Future<List<dynamic>> getBooks(String token) async {
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-    print(data);
     return data['data']['books']; // pastikan sesuai dengan struktur respons kamu
   } else {
     throw Exception('Gagal ambil data buku');

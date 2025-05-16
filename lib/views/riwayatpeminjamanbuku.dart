@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:presensi_flutter_test/services/books/get_books.dart';
 import 'package:presensi_flutter_test/utils/token.dart';
 import 'package:presensi_flutter_test/widgets/bottom_navbar.dart';
+import 'package:presensi_flutter_test/widgets/header_card.dart';
 import 'package:presensi_flutter_test/widgets/profil_widget.dart';
+import 'package:intl/intl.dart';
 
 class RiwayatPeminjamanBukuPage extends StatefulWidget {
   const RiwayatPeminjamanBukuPage({super.key});
@@ -33,13 +35,11 @@ class _RiwayatPeminjamanBukuPageState extends State<RiwayatPeminjamanBukuPage> {
         });
       } else {
         setState(() {
-          print("token tidak ada");
           isLoading = false;
         });
         // Handle token null if needed
       }
     } catch (e) {
-      print("Gagal ambil data buku: $e");
       setState(() {
         isLoading = false;
       });
@@ -65,17 +65,7 @@ class _RiwayatPeminjamanBukuPageState extends State<RiwayatPeminjamanBukuPage> {
                 child: Column(
                   children: [
                     // Title
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
-                      child: const Center(
-                        child: Text(
-                          'RIWAYAT PEMINJAMAN BUKU',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
+                  HeaderCard(title: "Riwayat Peminjaman Buku"),
 
                     // Search Bar (opsional, belum aktif)
                     Padding(
@@ -121,7 +111,7 @@ class _RiwayatPeminjamanBukuPageState extends State<RiwayatPeminjamanBukuPage> {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 2, horizontal: 10),
                                       decoration: BoxDecoration(
-                                        color: Colors.red[100],
+                                        color: Colors.blue.shade50,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Column(
@@ -143,16 +133,20 @@ class _RiwayatPeminjamanBukuPageState extends State<RiwayatPeminjamanBukuPage> {
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
-                                                  'Pinjam: ${data['loan_date']}',
-                                                  style: const TextStyle(
-                                                      fontSize: 12)),
+                                                'Pinjam: ${DateFormat.yMMMMd('id-ID').format(DateTime.parse(data['loan_date']))}',
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
                                               Text(
-                                                  'Kembali: ${data['return_date'] ?? 'Belum'}',
-                                                  style: const TextStyle(
-                                                      fontSize: 12)),
-                                              Text('Status: ${data['status']}',
-                                                  style: const TextStyle(
-                                                      fontSize: 12)),
+                                                'Kembali: ${data['return_date'] != null ? DateFormat.yMMMMd('id').format(DateTime.parse(data['return_date'])) : 'Belum'}',
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                              Text(
+                                                'Status: ${data['status']}',
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
                                             ],
                                           )
                                         ],

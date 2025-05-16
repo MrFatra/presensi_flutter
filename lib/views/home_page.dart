@@ -4,6 +4,7 @@ import 'package:presensi_flutter_test/views/profile_siswa.dart';
 import 'package:presensi_flutter_test/views/riwayatspp.dart';
 import 'package:presensi_flutter_test/views/riwayatpeminjamanbuku.dart';
 import 'package:presensi_flutter_test/widgets/bottom_navbar.dart';
+import 'package:presensi_flutter_test/widgets/profil_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,7 +36,7 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           child: Column(
             children: [
-              ProfilePage(),
+              ProfileHeader(),
 
               // Card Absensi
               _buildAbsensiCard(),
