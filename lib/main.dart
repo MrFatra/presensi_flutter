@@ -5,9 +5,12 @@ import 'package:presensi_flutter_test/views/login_page.dart';
 import 'package:presensi_flutter_test/views/permission.dart';
 import 'package:presensi_flutter_test/views/profile_siswa.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:presensi_flutter_test/views/riwayatpeminjamanbuku.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:presensi_flutter_test/app.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID');
   await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id', null);
