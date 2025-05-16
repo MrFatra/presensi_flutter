@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key});
+  final String? image;
+  final String? name;
+  final String? id;
+  final String? studentClass;
+
+  const ProfileHeader(
+      {this.id, this.name, this.studentClass, this.image, super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      leading: const CircleAvatar(
+      leading: CircleAvatar(
         radius: 28,
-        backgroundImage: AssetImage('assets/images/gambar.png'),
+        backgroundImage: image != null ? AssetImage(image!) : null,
       ),
-      title: const Text(
-        'Nama Siswa',
+      title: Text(
+        name ?? '-',
         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
-      subtitle: const Text(
-        'Nomor Induk Siswa - KELAS',
+      subtitle: Text(
+        studentClass ?? '-',
         style: TextStyle(color: Colors.white70),
       ),
       trailing: const Icon(Icons.logout, color: Colors.white),

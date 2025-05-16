@@ -10,147 +10,230 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  bool obscurePassword = true;
-  bool rememberMe = false;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  bool isLoading = false;
-  String? errorMessage;
+  bool _obscurePassword = true;
+  bool _rememberMe = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  void handleLogin() async {
+  void _togglePasswordVisibility() {
+    setState(() => _obscurePassword = !_obscurePassword);
+  }
+
+  void _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() {
-      isLoading = true;
-      errorMessage = null;
+      _isLoading = true;
+      _errorMessage = null;
     });
 
     final loginRequest = LoginRequest(
-      id: idController.text.trim(),
-      password: passwordController.text.trim(),
+      id: _idController.text.trim(),
+      password: _passwordController.text.trim(),
     );
 
     try {
-      final token = await login(loginRequest);
+      await login(loginRequest);
 
-      print('Login berhasil. Token: $token');
+      // TODO: Navigate ke halaman berikutnya
     } catch (e) {
       setState(() {
-        errorMessage = 'Login gagal: ${e.toString()}';
+        _errorMessage = e.toString();
       });
     } finally {
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
     }
   }
 
   @override
+  void dispose() {
+    _idController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: Colors.blue.shade700,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Image.asset('assets/images/gambar.png',
-                height: 200, fit: BoxFit.cover),
-            const SizedBox(height: 16),
-            const Text('Welcome Back',
-                style: TextStyle(
-                    fontSize: 28,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/images/gambar.png',
+                  height: 180,
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Selamat Datang!',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-            const SizedBox(height: 24),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(16)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Login to your account',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 16),
-                  const Text('ID Siswa'),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: idController,
-                    decoration: InputDecoration(
-                      hintText: 'Masukkan ID Siswa',
-                      fillColor: Colors.grey[200],
-                      filled: true,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none),
-                    ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text('Password'),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: passwordController,
-                    obscureText: obscurePassword,
-                    decoration: InputDecoration(
-                      hintText: 'Masukkan Password',
-                      fillColor: Colors.grey[200],
-                      filled: true,
-                      suffixIcon: IconButton(
-                        icon: Icon(obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility),
-                        onPressed: () =>
-                            setState(() => obscurePassword = !obscurePassword),
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                          value: rememberMe,
-                          onChanged: (val) =>
-                              setState(() => rememberMe = val!)),
-                      const Text('Remember me'),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Forgot Password',
-                            style: TextStyle(fontSize: 12)),
+                ),
+                const SizedBox(height: 32),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isLoading ? null : handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade700,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                      child: isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text('Login'),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          controller: _idController,
+                          label: 'ID Siswa',
+                          hintText: 'Masukkan ID Siswa',
+                          validator: (val) =>
+                              val == null || val.isEmpty ? 'ID harus diisi' : null,
+                          keyboardType: TextInputType.text,
+                          prefixIcon: Icons.person,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          controller: _passwordController,
+                          label: 'Password',
+                          hintText: 'Masukkan Password',
+                          validator: (val) =>
+                              val == null || val.isEmpty ? 'Password harus diisi' : null,
+                          obscureText: _obscurePassword,
+                          prefixIcon: Icons.lock,
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            onPressed: _togglePasswordVisibility,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (val) => setState(() => _rememberMe = val!),
+                            ),
+                            const Text('Remember me'),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {
+                              },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _handleLogin,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue.shade700,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 6,
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        if (_errorMessage != null) ...[
+                          const SizedBox(height: 16),
+                          Text(
+                            _errorMessage!,
+                            style: const TextStyle(color: Colors.redAccent),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                  if (errorMessage != null) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      errorMessage!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ]
-                ],
-              ),
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? hintText,
+    String? Function(String?)? validator,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    IconData? prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          validator: validator,
+          decoration: InputDecoration(
+            hintText: hintText,
+            filled: true,
+            fillColor: Colors.grey[200],
+            prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+            suffixIcon: suffixIcon,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          ),
+        ),
+      ],
     );
   }
 }
