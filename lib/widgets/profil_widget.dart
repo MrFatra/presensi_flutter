@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:presensi_flutter_test/models/student_profile_response.dart';
+import 'package:presensi_flutter_test/services/auth/logout.dart';
 import 'package:presensi_flutter_test/services/profile/get_profile.dart';
 
 class ProfileHeader extends StatefulWidget {
@@ -30,7 +31,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       leading: CircleAvatar(
@@ -38,16 +39,23 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         backgroundImage: student?.student.photo != null
             ? NetworkImage('http://10.0.2.2:8000/storage/${student!.student.photo!}')
             : null,
+        backgroundColor: Colors.white24,
       ),
       title: Text(
         student?.student.fullname ?? '-',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        '${student?.student.idStudent} - ${student?.student.studentClass}' ?? '-',
-        style: TextStyle(color: Colors.white70),
+        '${student?.student.idStudent ?? '-'} - ${student?.student.studentClass ?? '-'}',
+        style: const TextStyle(color: Colors.white70),
       ),
-      trailing: const Icon(Icons.logout, color: Colors.white),
+      trailing: IconButton(
+        icon: const Icon(Icons.logout, color: Colors.white),
+        onPressed: () {
+          logout(context);
+        },
+        tooltip: 'Logout',
+      ),
     );
   }
 }
