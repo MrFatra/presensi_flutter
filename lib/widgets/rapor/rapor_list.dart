@@ -6,10 +6,18 @@ class RaporList extends StatelessWidget {
 
   const RaporList(this.data, {super.key});
 
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty || data[0]['academic_year'] == null) {
-      return const Center(child: Text('Tidak ada data', style: TextStyle(fontSize: 16)));
+      return const Center(
+          child: Text('Tidak ada data', style: TextStyle(fontSize: 16)));
     }
 
     return ListView.builder(
@@ -19,7 +27,8 @@ class RaporList extends StatelessWidget {
         return Card(
           color: Colors.blue.shade50,
           margin: const EdgeInsets.only(bottom: 10),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             title: Text(
               '${item['academic_year']} - ${item['semester']}',
@@ -42,21 +51,15 @@ class RaporList extends StatelessWidget {
                     Text('Raport Ajaran Tahun : ${item['report_date']}'),
                     GestureDetector(
                       onTap: () async {
-                        final url = 'http://10.0.2.2:8000/public${item['file_path']}';
-                        if (url != null && url.isNotEmpty) {
-                          final uri = Uri.parse(url);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri, mode: LaunchMode.externalApplication);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Tidak dapat membuka file')),
-                            );
-                          }
-                        }
+                        final url = 'http://10.0.2.2:8000/storage/${item['file_path']}';
+
+                        await _launchURL(url);
                       },
                       child: const Text(
                         'Unduh File Tahun : Klik Disini',
-                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline),
                       ),
                     ),
                     Text('Deskripsi : ${item['description']}'),
