@@ -1,21 +1,19 @@
-class AttendanceHistoryResponse {
-  final bool success;
+class AttendanceResponse {
   final String message;
-  final List<AttendanceData> data;
+  final String? distance;
+  final AttendanceData? data;
 
-  AttendanceHistoryResponse({
-    required this.success,
+  AttendanceResponse({
     required this.message,
-    required this.data,
+    this.distance,
+    this.data,
   });
 
-  factory AttendanceHistoryResponse.fromJson(Map<String, dynamic> json) {
-    return AttendanceHistoryResponse(
-      success: json['success'],
+  factory AttendanceResponse.fromJson(Map<String, dynamic> json) {
+    return AttendanceResponse(
       message: json['message'],
-      data: (json['data'] as List)
-          .map((item) => AttendanceData.fromJson(item))
-          .toList(),
+      distance: json['distance_m'],
+      data: json['data'] != null ? AttendanceData.fromJson(json['data']) : null,
     );
   }
 }
@@ -23,58 +21,59 @@ class AttendanceHistoryResponse {
 class AttendanceData {
   final int id;
   final String idStudent;
-  final String className;
-  final int? subjectId;
+  final int classId;
   final String attendanceDate;
   final String attendanceTime;
   final String? checkInTime;
   final String? checkOutTime;
-  final String status;
-  final String? latitude;
-  final String? longitude;
-  final String createdAt;
-  final String updatedAt;
+  final int statusId;
+  final double? latitude;
+  final double? longitude;
   final int academicYearId;
   final int semesterId;
   final String? document;
+  final String createdAt;
+  final String updatedAt;
 
   AttendanceData({
     required this.id,
     required this.idStudent,
-    required this.className,
-    this.subjectId,
+    required this.classId,
     required this.attendanceDate,
     required this.attendanceTime,
-    required this.checkInTime,
+    this.checkInTime,
     this.checkOutTime,
-    required this.status,
-    required this.latitude,
-    required this.longitude,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.statusId,
+    this.latitude,
+    this.longitude,
     required this.academicYearId,
     required this.semesterId,
     this.document,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory AttendanceData.fromJson(Map<String, dynamic> json) {
     return AttendanceData(
       id: json['id'],
       idStudent: json['id_student'],
-      className: json['class_name'],
-      subjectId: json['subject_id'],
+      classId: json['class_id'],
       attendanceDate: json['attendance_date'],
       attendanceTime: json['attendance_time'],
       checkInTime: json['check_in_time'],
       checkOutTime: json['check_out_time'],
-      status: json['status'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      statusId: json['status_id'],
+      latitude: json['latitude'] is String
+          ? double.tryParse(json['latitude'])
+          : json['latitude'] as double,
+      longitude: json['longitude'] is String
+          ? double.tryParse(json['longitude'])
+          : json['longitude'] as double,
       academicYearId: json['academic_year_id'],
       semesterId: json['semester_id'],
       document: json['document'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 }

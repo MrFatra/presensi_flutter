@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presensi_flutter_test/services/auth/login.dart';
 import 'package:presensi_flutter_test/models/login_request.dart';
+import 'package:presensi_flutter_test/views/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,7 +40,12 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await login(loginRequest);
 
-      // TODO: Navigate ke halaman berikutnya
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const HomePage(),
+        ),
+      );
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -107,8 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _idController,
                           label: 'ID Siswa',
                           hintText: 'Masukkan ID Siswa',
-                          validator: (val) =>
-                              val == null || val.isEmpty ? 'ID harus diisi' : null,
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'ID harus diisi'
+                              : null,
                           keyboardType: TextInputType.text,
                           prefixIcon: Icons.person,
                         ),
@@ -117,8 +124,9 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _passwordController,
                           label: 'Password',
                           hintText: 'Masukkan Password',
-                          validator: (val) =>
-                              val == null || val.isEmpty ? 'Password harus diisi' : null,
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Password harus diisi'
+                              : null,
                           obscureText: _obscurePassword,
                           prefixIcon: Icons.lock,
                           suffixIcon: IconButton(
@@ -133,13 +141,13 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Checkbox(
                               value: _rememberMe,
-                              onChanged: (val) => setState(() => _rememberMe = val!),
+                              onChanged: (val) =>
+                                  setState(() => _rememberMe = val!),
                             ),
                             const Text('Remember me'),
                             const Spacer(),
                             TextButton(
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               child: const Text(
                                 'Forgot Password?',
                                 style: TextStyle(fontSize: 13),
@@ -172,10 +180,9 @@ class _LoginPageState extends State<LoginPage> {
                                 : const Text(
                                     'Login',
                                     style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white
-                                    ),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
                           ),
                         ),
@@ -230,7 +237,8 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           ),
         ),
       ],

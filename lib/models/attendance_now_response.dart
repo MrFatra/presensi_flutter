@@ -1,9 +1,11 @@
 class AttendanceNowResponse {
-  final DateTime? checkInTime;
-  final DateTime? checkOutTime;
+  final int? attendanceId;
+  final String? checkInTime;
+  final String? checkOutTime;
   final String? status;
 
   AttendanceNowResponse({
+    required this.attendanceId,
     required this.checkInTime,
     required this.checkOutTime,
     required this.status,
@@ -11,12 +13,9 @@ class AttendanceNowResponse {
 
   factory AttendanceNowResponse.fromJson(Map<String, dynamic> json) {
     return AttendanceNowResponse(
-      checkInTime: json['check_in_time'] != null
-          ? DateTime.parse(json['check_in_time'])
-          : null,
-      checkOutTime: json['check_out_time'] != null
-          ? DateTime.parse(json['check_out_time'])
-          : null,
+      attendanceId: json['attendance_id'],
+      checkInTime: json['check_in_time'],
+      checkOutTime: json['check_out_time'],
       status: json['status'],
     );
   }
