@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:presensi_flutter_test/models/student_profile_response.dart';
+import 'package:presensi_flutter_test/services/profile/get_profile.dart';
+import 'package:presensi_flutter_test/utils/date_formater.dart';
+import 'package:presensi_flutter_test/views/editprofilesiswa.dart';
 import 'package:presensi_flutter_test/widgets/header_card.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -10,6 +14,26 @@ class ProfileDetails extends StatefulWidget {
 }
 
 class _ProfileDetailsState extends State<ProfileDetails> {
+  StudentProfileResponse? student;
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final profileData = await getProfile();
+      setState(() {
+        student = profileData;
+      });
+    } catch (e) {
+       setState(() {
+        student = null;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileData = {
@@ -38,7 +62,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                 size: 80,
               ),
             ),
-            Text('Nama Pelajar'),
+            Text(student?.student.fullname ?? ''),
             SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 10),
@@ -46,8 +70,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ...profileData.entries.map((entry) {
-                    return Padding(
+                  if (student != null) ...[
+                    Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,7 +79,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           SizedBox(
                             width: 120,
                             child: Text(
-                              entry.key,
+                              'NIS',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -63,12 +87,98 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           ),
                           const Text(': '),
                           Expanded(
-                            child: Text(entry.value),
+                            child: Text(student!.student.idStudent ?? ''),
                           ),
                         ],
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            child: Text(
+                              'Kelas',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const Text(': '),
+                          Expanded(
+                            child: Text(student!.student.studentClass ?? ''),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            child: Text(
+                              'TTL',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const Text(': '),
+                          Expanded(
+                            child: Text(student!.student.birthPlace != null && student!.student.birthDate != null
+                                ? '${student!.student.birthPlace} / ${formatTanggal(student!.student.birthDate)}'
+                                : ''),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            child: Text(
+                              'No Hp',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const Text(': '),
+                          Expanded(
+                            child: Text(student!.student.parentPhonecell ?? ''),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 120,
+                            child: Text(
+                              'Gender',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const Text(': '),
+                          Expanded(
+                            child: Text(student!.student.gender ?? ''),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 16),
@@ -80,7 +190,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileSiswaPage()));
+                      },
                       child: const Text(
                         'EDIT PROFILE',
                         style: TextStyle(
