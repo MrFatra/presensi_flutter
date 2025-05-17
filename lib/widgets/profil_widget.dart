@@ -10,6 +10,11 @@ class ProfileHeader extends StatelessWidget {
       {this.id, this.name, this.studentClass, this.image, super.key});
 
   @override
+  State<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<ProfileHeader> {
+  @override
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

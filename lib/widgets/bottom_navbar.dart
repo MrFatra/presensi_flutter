@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:presensi_flutter_test/utils/constant.dart';
-import 'package:presensi_flutter_test/views/acchievement_pages.dart';
 import 'package:presensi_flutter_test/views/home_page.dart';
 import 'package:presensi_flutter_test/views/profile_siswa.dart';
+import 'package:presensi_flutter_test/views/rapor_page.dart';
 import 'package:presensi_flutter_test/views/riwayatpeminjamanbuku.dart';
 import 'package:presensi_flutter_test/views/riwayatspp.dart';
 
@@ -33,9 +33,9 @@ class BottomNavbar extends StatelessWidget {
               else if (index == 2)
                 return  HomePage();
               else if (index == 3)
-                return  AcchievementPage();
-              else
-                return ProfilePage();
+                return  RaporPage();
+              else 
+                return StudentProfilePage();
             },
           ),
         );
