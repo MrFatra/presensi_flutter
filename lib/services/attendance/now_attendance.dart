@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:presensi_flutter_test/config/api_config.dart';
 import 'package:presensi_flutter_test/models/attendance_now_response.dart';
@@ -17,6 +18,7 @@ Future<AttendanceNowResponse> getAttendanceNow() async {
   });
 
   if (response.statusCode == 200) {
+    debugPrint(response.body.toString());
     return AttendanceNowResponse.fromJson(jsonDecode(response.body)['data']);
   } else {
     throw jsonDecode(response.body)['message'];

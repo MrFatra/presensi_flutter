@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:presensi_flutter_test/models/attendance_history_response.dart';
+import 'package:presensi_flutter_test/services/attendance/history_attendance.dart';
 import 'package:presensi_flutter_test/models/attendance_now_response.dart';
 import 'package:presensi_flutter_test/models/student_profile_response.dart';
 import 'package:presensi_flutter_test/services/attendance/now_attendance.dart';
+import 'package:presensi_flutter_test/services/attendance/submit_attendance.dart';
 import 'package:presensi_flutter_test/services/profile/get_profile.dart';
 import 'package:presensi_flutter_test/views/permission.dart';
 import 'package:presensi_flutter_test/widgets/bottom_navbar.dart';
@@ -18,8 +21,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AttendanceNowResponse? attendanceData;
   StudentProfileResponse? profile;
+  AttendanceHistoryResponse? histories;
   bool isLoading = true;
-  bool isHistory = true;
+  bool isCheckIn = true;
 
   @override
   void initState() {
@@ -31,6 +35,8 @@ class _HomePageState extends State<HomePage> {
     try {
       final value = await getAttendanceNow();
       final profileData = await getProfile();
+      await getAttendanceHistoryData();
+
       setState(() {
         attendanceData = value;
         profile = profileData;
@@ -44,13 +50,67 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> getAttendanceHistoryData() async {
+    try {
+      final historiesData = await getAttendanceHistory(isCheckIn);
+      setState(() {
+        histories = historiesData;
+      });
+    } catch (e) {
+      print('Gagal mengambil riwayat absensi: $e');
+    }
+  }
+
+  void handleCheckIn() async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Harap tunggu...')),
+      );
+      final response = await attendanceNow(isCheckIn: true);
+      final data = await getAttendanceNow();
+      await getAttendanceHistoryData();
+      setState(() {
+        attendanceData = data;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
+  void handleCheckOut() async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Harap tunggu...')),
+      );
+      final response = await attendanceNow(isCheckIn: false);
+      final data = await getAttendanceNow();
+      await getAttendanceHistoryData();
+      setState(() {
+        attendanceData = data;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavbar(currentIndex: 2),
       body: Stack(
         children: [
-          // Blue Ellipse Background
           Positioned(
             top: 0,
             left: 0,
@@ -73,8 +133,44 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   profile == null
-                      ? CircularProgressIndicator()
-                      : ProfileHeader(),
+                      ? Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 100,
+                                    height: 16,
+                                    color: Colors.grey[300],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    width: 60,
+                                    height: 14,
+                                    color: Colors.grey[300],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      : ProfileHeader(
+                          id: profile?.student.idStudent,
+                          image: profile?.student.photo,
+                          name: profile?.student.fullname,
+                          studentClass: profile?.student.studentClass,
+                        ),
                   _buildAbsensiCard(),
                   const SizedBox(height: 12),
                   Expanded(child: _buildRiwayatAbsensi()),
@@ -107,15 +203,22 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    final checkIn = attendanceData!.checkInTime != null
-        ? DateFormat('HH:mm').format(attendanceData!.checkInTime!)
+    final checkIn = attendanceData?.checkInTime != null
+        ? DateFormat('HH:mm')
+            .format(DateFormat('HH:mm:ss').parse(attendanceData!.checkInTime!))
         : '-';
 
-    final checkOut = attendanceData!.checkOutTime != null
-        ? DateFormat('HH:mm').format(attendanceData!.checkOutTime!)
+    final checkOut = attendanceData?.checkOutTime != null
+        ? DateFormat('HH:mm')
+            .format(DateFormat('HH:mm:ss').parse(attendanceData!.checkOutTime!))
         : '-';
 
     final status = attendanceData!.status ?? '-';
+
+    final bool isCheckedIn = checkIn != '-';
+    final bool isCheckedOut = checkOut != '-';
+    final bool isPresent = status == 'Hadir';
+    final bool isPermission = status == 'Izin';
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -159,30 +262,41 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: status == 'Hadir' && checkIn != '-' ? null : () {},
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                onPressed: (!isCheckedIn && !isPresent && !isPermission)
+                    ? handleCheckIn
+                    : null,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white),
                 child: const Text('MASUK'),
               ),
               ElevatedButton(
-                onPressed: status == 'Hadir' && checkOut != '-' ? null : () {},
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                onPressed: (isCheckedIn && !isCheckedOut && !isPermission)
+                    ? handleCheckOut
+                    : null,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white),
                 child: const Text('KELUAR'),
               ),
             ],
           ),
           const SizedBox(height: 8),
           ElevatedButton(
-            onPressed: status == 'Izin'
-                ? null
-                : () {
+            onPressed: (!isCheckedIn &&
+                    !isCheckedOut &&
+                    !isPermission &&
+                    !isPresent)
+                ? () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => PermissionPage()),
                     );
-                  },
+                  }
+                : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.yellow[700],
-              foregroundColor: Colors.black,
+              foregroundColor: Colors.white,
             ),
             child: const Text('IZIN'),
           ),
@@ -192,14 +306,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRiwayatAbsensi() {
-    final List<Map<String, Object>> dummyData = [
-      {'date': 'Senin, 13 Mei 2025', 'status': 'Hadir', 'color': Colors.green},
-      {'date': 'Selasa, 14 Mei 2025', 'status': 'Izin', 'color': Colors.orange},
-      {'date': 'Rabu, 15 Mei 2025', 'status': 'Hadir', 'color': Colors.green},
-      {'date': 'Kamis, 16 Mei 2025', 'status': 'Hadir', 'color': Colors.green},
-      {'date': 'Jumat, 17 Mei 2025', 'status': 'Hadir', 'color': Colors.green},
-    ];
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -214,18 +320,19 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 Text(
-                  isHistory
+                  isCheckIn
                       ? 'Riwayat Absensi Masuk'
                       : 'Riwayat Absensi Keluar',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 Switch(
-                  value: isHistory,
-                  onChanged: (val) {
+                  value: isCheckIn,
+                  onChanged: (val) async {
                     setState(() {
-                      isHistory = val;
+                      isCheckIn = val;
                     });
+                    await getAttendanceHistoryData();
                   },
                 ),
               ],
@@ -233,22 +340,40 @@ class _HomePageState extends State<HomePage> {
           ),
           const Divider(height: 0),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: dummyData.length,
-              itemBuilder: (context, index) {
-                final item = dummyData[index];
-                return _buildAbsensiItem(item['date']! as String,
-                    item['status']! as String, item['color'] as Color);
-              },
-            ),
+            child: histories == null
+                ? ListView.builder(
+                    itemCount: 5,
+                    itemBuilder: (context, index) => Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 16),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  )
+                : histories!.data.isEmpty
+                    ? const Center(
+                        child: Text('Tidak ada data.'),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        itemCount: histories!.data.length,
+                        itemBuilder: (context, index) {
+                          final item = histories!.data[index];
+                          return _buildAbsensiItem(
+                              item.attendanceDate, item.status);
+                        },
+                      ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAbsensiItem(String date, String status, Color color) {
+  Widget _buildAbsensiItem(String date, String status) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       elevation: 2,
@@ -256,12 +381,17 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           children: [
-            Text(date),
+            Text(DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+                .format(DateTime.tryParse(date)!)),
             const Spacer(),
             Text(
               status,
               style: TextStyle(
-                color: color,
+                color: status == 'Hadir'
+                    ? Colors.green
+                    : status == 'Izin'
+                        ? Colors.orange
+                        : Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
