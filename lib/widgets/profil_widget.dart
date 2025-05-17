@@ -1,33 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:presensi_flutter_test/models/student_profile_response.dart';
+import 'package:presensi_flutter_test/services/profile/get_profile.dart';
 
-class ProfileHeader extends StatelessWidget {
-  final String? image;
-  final String? name;
-  final String? id;
-  final String? studentClass;
-
-  const ProfileHeader(
-      {this.id, this.name, this.studentClass, this.image, super.key});
-
+class ProfileHeader extends StatefulWidget {
+  const ProfileHeader({super.key});
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
 }
 
 class _ProfileHeaderState extends State<ProfileHeader> {
+  StudentProfileResponse? student;
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    try {
+      final profileData = await getProfile();
+      setState(() {
+        student = profileData;
+      });
+    } catch (e) {
+       setState(() {
+        student = null;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       leading: CircleAvatar(
         radius: 28,
-        backgroundImage: image != null ? AssetImage(image!) : null,
+        backgroundImage: student?.student.photo != null
+            ? AssetImage(student!.student.photo!)
+            : null,
       ),
       title: Text(
-        name ?? '-',
+        student?.student.fullname ?? '-',
         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        studentClass ?? '-',
+        '${student?.student.idStudent} - ${student?.student.studentClass}' ?? '-',
         style: TextStyle(color: Colors.white70),
       ),
       trailing: const Icon(Icons.logout, color: Colors.white),

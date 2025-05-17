@@ -74,12 +74,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   profile == null
                       ? CircularProgressIndicator()
-                      : ProfileHeader(
-                          id: profile?.student.idStudent,
-                          image: profile?.student.photo,
-                          name: profile?.student.fullname,
-                          studentClass: profile?.student.studentClass,
-                        ),
+                      : ProfileHeader(),
                   _buildAbsensiCard(),
                   const SizedBox(height: 12),
                   Expanded(child: _buildRiwayatAbsensi()),
