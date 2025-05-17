@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -68,5 +69,34 @@ Future<String> attendanceNow({required bool isCheckIn}) async {
   } catch (err) {
     debugPrint('$err');
     rethrow;
+  }
+}
+
+Future<String> permissionAttendance(File file) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final uri =
+      Uri.parse('${ApiConfig.BASEAPIURL}/api/student/attendance/check-in');
+
+  final request = http.MultipartRequest('POST', uri)
+    ..headers['Authorization'] = 'Bearer ${prefs.getString('token')}'
+    ..headers['Accept'] = 'application/json'
+    ..fields['status_id'] = '3';
+
+  request.files.add(await http.MultipartFile.fromPath(
+    'document',
+    file.path,
+  ));
+
+  final response = await request.send();
+  final responseBody = await response.stream.bytesToString();
+  final Map<String, dynamic> jsonResponse = json.decode(responseBody);
+
+  if (response.statusCode == 200) {
+    final message = jsonResponse['message'] ?? 'Berhasil tanpa pesan.';
+    return message;
+  } else {
+    final message = jsonResponse['message'] ?? 'Gagal tanpa pesan.';
+    return message;
   }
 }

@@ -1,13 +1,13 @@
 class AttendanceRequest {
   final int? attendanceId;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
   final int? statusId;
 
   AttendanceRequest({
     this.attendanceId,
-    required this.latitude,
-    required this.longitude,
+    this.latitude,
+    this.longitude,
     this.statusId,
   });
 
