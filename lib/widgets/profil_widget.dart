@@ -36,7 +36,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       leading: CircleAvatar(
         radius: 28,
         backgroundImage: student?.student.photo != null
-            ? AssetImage(student!.student.photo!)
+            ? NetworkImage('http://10.0.2.2:8000/storage/${student!.student.photo!}')
             : null,
       ),
       title: Text(

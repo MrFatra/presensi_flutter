@@ -34,13 +34,13 @@ class Student {
     required this.idStudent,
     required this.fullname,
     required this.parentPhonecell,
-    required this.photo,
     required this.birthPlace,
     required this.birthDate,
     required this.gender,
     required this.academicYear,
     required this.semester,
     required this.studentClass,
+    this.photo,
   });
 
   factory Student.fromJson(Map<String, dynamic> json) {
@@ -48,13 +48,13 @@ class Student {
       idStudent: json['id_student'],
       fullname: json['fullname'],
       parentPhonecell: json['parent_phonecell'],
-      photo: json['photo'],
       birthPlace: json['birth_place'],
       birthDate: json['birth_date'],
       gender: json['gender'],
       academicYear: json['academic_year'],
       semester: json['semester'],
       studentClass: json['student_class'],
+      photo: json['photo'],
     );
   }
 }

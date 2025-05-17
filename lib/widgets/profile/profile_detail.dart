@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:presensi_flutter_test/models/student_profile_response.dart';
 import 'package:presensi_flutter_test/services/profile/get_profile.dart';
 import 'package:presensi_flutter_test/utils/date_formater.dart';
@@ -28,7 +27,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
         student = profileData;
       });
     } catch (e) {
-       setState(() {
+      setState(() {
         student = null;
       });
     }
@@ -36,15 +35,6 @@ class _ProfileDetailsState extends State<ProfileDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final profileData = {
-      'Nomor Hp': '0882432198781',
-      'Kelas': 'XI A',
-      'TTL': 'Pyk / 02-01-2004',
-      'Jenis Kelamin': 'Perempuan',
-      'E-mail': 'ananda@gmail.com',
-      'Alamat': 'Balai Gadang',
-    };
-
     return Padding(
       padding: EdgeInsets.all(12),
       child: Container(
@@ -57,10 +47,22 @@ class _ProfileDetailsState extends State<ProfileDetails> {
             // Title
             HeaderCard(title: "Profil Pelajar"),
             Center(
-              child: Icon(
-                Icons.person,
-                size: 80,
-              ),
+              child: student?.student.photo != null &&
+                      student!.student.photo!.isNotEmpty
+                  ? CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage('http://10.0.2.2:8000/storage/${student!.student.photo!}'),
+                      backgroundColor: Colors.grey[200],
+                    )
+                  : CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.grey[300],
+                      child: const Icon(
+                        Icons.person,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
             Text(student?.student.fullname ?? ''),
             SizedBox(height: 10),
@@ -129,7 +131,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           ),
                           const Text(': '),
                           Expanded(
-                            child: Text(student!.student.birthPlace != null && student!.student.birthDate != null
+                            child: Text(student!.student.birthPlace != null &&
+                                    student!.student.birthDate != null
                                 ? '${student!.student.birthPlace} / ${formatTanggal(student!.student.birthDate)}'
                                 : ''),
                           ),
@@ -191,12 +194,24 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileSiswaPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditProfileSiswaPage(
+                                      fullName: student!.student.fullname,
+                                      birthDate: student!.student.birthDate,
+                                      birthPlace: student!.student.birthPlace,
+                                      phoneNumber:
+                                          student!.student.parentPhonecell,
+                                      photo: student!.student.photo ?? '-',
+                                    )));
                       },
                       child: const Text(
                         'EDIT PROFILE',
                         style: TextStyle(
-                            fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

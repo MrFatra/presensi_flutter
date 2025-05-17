@@ -1,10 +1,104 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:presensi_flutter_test/models/student_profile_request.dart';
+import 'package:presensi_flutter_test/services/profile/update_profile.dart';
+import 'package:presensi_flutter_test/utils/date_formater.dart';
 import 'package:presensi_flutter_test/widgets/bottom_navbar.dart';
 import 'package:presensi_flutter_test/widgets/header_card.dart';
 import 'package:presensi_flutter_test/widgets/profil_widget.dart';
 
-class EditProfileSiswaPage extends StatelessWidget {
-  const EditProfileSiswaPage({super.key});
+class EditProfileSiswaPage extends StatefulWidget {
+  final String fullName;
+  final String phoneNumber;
+  final String birthPlace;
+  final String birthDate;
+  final String photo;
+
+  const EditProfileSiswaPage({
+    required this.fullName,
+    required this.phoneNumber,
+    required this.birthPlace,
+    required this.birthDate,
+    required this.photo,
+    super.key,
+  });
+
+  @override
+  State<EditProfileSiswaPage> createState() => _EditProfileSiswaPageState();
+}
+
+class _EditProfileSiswaPageState extends State<EditProfileSiswaPage> {
+  TextEditingController fullnameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController birthPlaceController = TextEditingController();
+  TextEditingController birthDateController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  File? photo;
+  bool _isLoading = false;
+
+  Future<void> submitProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final data = StudentProfileRequest(
+        fullName: fullnameController.text,
+        birthDate: convertDateToYMD(birthDateController.text),
+        birthPlace: birthPlaceController.text,
+        parentPhoneCell: phoneNumberController.text,
+        password:
+            passwordController.text.isNotEmpty ? passwordController.text : null,
+        photo: photo,
+      );
+
+      final response = await updateProfile(data);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response)),
+      );
+
+      print('Nama: ${fullnameController.text}');
+      print('Phone: ${phoneNumberController.text}');
+      print('Tempat Lahir: ${birthPlaceController.text}');
+      print('Tanggal Lahir: ${birthDateController.text}');
+      print('Password: ${passwordController.text}');
+      print('Photo: ${photo?.path}');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memperbarui profil. Coba lagi.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      fullnameController.text = widget.fullName;
+      phoneNumberController.text = widget.phoneNumber;
+      birthPlaceController.text = widget.birthPlace;
+      birthDateController.text = formatDateForDisplay(widget.birthDate);
+    });
+  }
+
+  Future<void> pickImage({required ImageSource source}) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        photo = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,18 +142,32 @@ class EditProfileSiswaPage extends StatelessWidget {
                             child: ListView(
                               children: [
                                 _buildLabel('Nama'),
-                                _buildDisabledField('Nama Siswa'),
-                                _buildLabel('No Hp'),
-                                _buildDisabledField('0882432198781'),
-                                _buildLabel('TTL'),
-                                _buildDisabledField('Kuningan / 02-01-2004'),
+                                _buildField(
+                                  controller: fullnameController,
+                                ),
+                                _buildLabel('Nomor Hp Orang Tua'),
+                                _buildField(
+                                  controller: phoneNumberController,
+                                ),
+                                _buildLabel('Tempat Lahir'),
+                                _buildField(
+                                  controller: birthPlaceController,
+                                  hintText: 'Jakarta',
+                                ),
+                                _buildLabel('Tanggal Lahir'),
+                                _buildField(
+                                  controller: birthDateController,
+                                  hintText: '02-01-2004',
+                                ),
                                 _buildLabel('Pasword Baru'),
-                                _buildField(hintText: 'Masukkan Pssword Baru'),
+                                _buildField(
+                                  controller: passwordController,
+                                ),
                                 _buildLabel('Foto Profile'),
                                 _buildFilePickerButton(),
                                 const SizedBox(height: 24),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: _isLoading ? null : submitProfile,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF4169E1),
                                     padding: const EdgeInsets.symmetric(
@@ -68,10 +176,21 @@ class EditProfileSiswaPage extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Simpan',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.5,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Simpan',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
                                 ),
                               ],
                             ),
@@ -97,26 +216,12 @@ class EditProfileSiswaPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDisabledField(String value) {
+  Widget _buildField({
+    String? hintText,
+    required TextEditingController controller,
+  }) {
     return TextField(
-      enabled: false,
-      decoration: InputDecoration(
-        hintText: value,
-        filled: true,
-        fillColor: Colors.grey[300],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      ),
-    );
-  }
-
-  Widget _buildField({String? hintText}) {
-    return TextField(
-      obscureText: true,
+      controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
@@ -132,32 +237,44 @@ class EditProfileSiswaPage extends StatelessWidget {
   }
 
   Widget _buildFilePickerButton() {
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black45),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.purple[100],
-                padding: const EdgeInsets.all(0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 48,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black45),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextButton.icon(
+                  onPressed: () => pickImage(source: ImageSource.gallery),
+                  icon: const Icon(Icons.image_outlined),
+                  label: const Text("Galeri"),
+                ),
               ),
-              child: const Text('Choose File'),
-            ),
+              const VerticalDivider(width: 1),
+              Expanded(
+                child: TextButton.icon(
+                  onPressed: () => pickImage(source: ImageSource.camera),
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  label: const Text("Kamera"),
+                ),
+              ),
+            ],
           ),
-          const VerticalDivider(width: 1),
-          const Expanded(
-            child: Center(
-              child: Text('No Choose File'),
-            ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          photo != null
+              ? 'File: ${photo!.path.split("/").last}'
+              : 'Belum memilih gambar',
+          style: const TextStyle(
+              color: Colors.black54, fontStyle: FontStyle.italic),
+        ),
+      ],
     );
   }
 }
