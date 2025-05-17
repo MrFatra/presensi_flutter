@@ -5,7 +5,7 @@ import 'package:presensi_flutter_test/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('id_ID');
+  await initializeDateFormatting('id');
   await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }

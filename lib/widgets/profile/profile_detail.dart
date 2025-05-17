@@ -84,7 +84,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                       child: const Text(
                         'EDIT PROFILE',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

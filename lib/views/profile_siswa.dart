@@ -10,17 +10,34 @@ class StudentProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blue.shade600,
         bottomNavigationBar: BottomNavbar(currentIndex: 4),
-        body: SafeArea(
-          child: Column(
-            children: [
-              const ProfileHeader(),
-              const SizedBox(height: 10),
-              const ProfileDetails(),
-              
-            ],
-          ),
+        body: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.30,
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
+                    bottomRight: Radius.circular(50),
+                  ),
+                ),
+              ),
+            ),
+            SafeArea(
+              child: Column(
+                children: [
+                  const ProfileHeader(),
+                  const SizedBox(height: 10),
+                  const ProfileDetails(),
+                ],
+              ),
+            )
+          ],
         ));
   }
 }
