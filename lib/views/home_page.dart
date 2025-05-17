@@ -3,10 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:presensi_flutter_test/models/attendance_history_response.dart';
 import 'package:presensi_flutter_test/services/attendance/history_attendance.dart';
 import 'package:presensi_flutter_test/models/attendance_now_response.dart';
-import 'package:presensi_flutter_test/models/student_profile_response.dart';
 import 'package:presensi_flutter_test/services/attendance/now_attendance.dart';
 import 'package:presensi_flutter_test/services/attendance/submit_attendance.dart';
-import 'package:presensi_flutter_test/services/profile/get_profile.dart';
 import 'package:presensi_flutter_test/views/permission.dart';
 import 'package:presensi_flutter_test/widgets/bottom_navbar.dart';
 import 'package:presensi_flutter_test/widgets/profil_widget.dart';
@@ -20,7 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AttendanceNowResponse? attendanceData;
-  StudentProfileResponse? profile;
   AttendanceHistoryResponse? histories;
   bool isLoading = true;
   bool isCheckIn = true;
@@ -34,12 +31,10 @@ class _HomePageState extends State<HomePage> {
   void getData() async {
     try {
       final value = await getAttendanceNow();
-      final profileData = await getProfile();
       await getAttendanceHistoryData();
 
       setState(() {
         attendanceData = value;
-        profile = profileData;
         isLoading = false;
       });
     } catch (e) {
@@ -132,45 +127,7 @@ class _HomePageState extends State<HomePage> {
               height: double.infinity,
               child: Column(
                 children: [
-                  profile == null
-                      ? Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 16,
-                                    color: Colors.grey[300],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    width: 60,
-                                    height: 14,
-                                    color: Colors.grey[300],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
-                      : ProfileHeader(
-                          id: profile?.student.idStudent,
-                          image: profile?.student.photo,
-                          name: profile?.student.fullname,
-                          studentClass: profile?.student.studentClass,
-                        ),
+                  ProfileHeader(),
                   _buildAbsensiCard(),
                   const SizedBox(height: 12),
                   Expanded(child: _buildRiwayatAbsensi()),
